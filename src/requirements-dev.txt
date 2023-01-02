@@ -1,0 +1,5 @@
+pytest==6.2.4
+pytest-redis==2.1.1
+Flask-Script==2.0.6
+fakeredis==1.7.1
+PyYAML==6.0
