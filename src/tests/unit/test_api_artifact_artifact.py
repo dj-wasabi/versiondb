@@ -11,25 +11,25 @@ from api.v1artifacts.artifact import Artifact
 
 def test_api_v1artifacts_create_correct(dummyArtifactData):
     artName = dummyArtifactData['name']
-    artGroup = dummyArtifactData['group']
+    artCategory = dummyArtifactData['category']
     userName = "myUserName"
     myartifact = Artifact(data=dummyArtifactData)
     output, state = myartifact.create(user=userName)
 
     assert state == 201
     assert output['name'] == artName
-    assert output['group'] == artGroup
+    assert output['category'] == artCategory
     assert output['version'] == "0.0.0"
 
 
 def test_api_v1artifacts_create_incorrect_missing_group(dummyArtifactData):
-    dummyArtifactData.pop('group')
+    dummyArtifactData.pop('category')
     userName = "myUserName"
     myartifact = Artifact(data=dummyArtifactData)
     output, state = myartifact.create(user=userName)
 
     assert state == 409
-    assert output['error'] == "Both 'name' and 'group' is required."
+    assert output['error'] == "Both 'name' and 'category' are required."
 
 
 def test_api_v1artifacts_create_incorrect_already_exist(dummyArtifactData):

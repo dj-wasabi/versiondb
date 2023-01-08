@@ -39,7 +39,7 @@ class User:
           logger.debug('Password check for {u} was successfull'.format(u=username))
           expires = datetime.timedelta(hours=1)
           access_token = create_access_token(identity=str(username), expires_delta=expires)
-          logger.warning('We have a successfull authentication {t}'.format(t=access_token))
+          logger.debug('We have a successfull authentication for user {u}'.format(u=username))
           return {"token": access_token}, 200
       except Exception as e:
         logger.debug('Password check for {u} was unsuccessfull'.format(u=username))

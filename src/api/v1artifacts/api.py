@@ -1,8 +1,12 @@
-from flask_restx import Api
+from flask_restx import Namespace
 from api.server.mongodb.mongodb import db
 
-api = Api(version='1.0', title='VersionDB', description='VersionDB')
-nsArtifact = api.namespace('api/v1/artifacts', description='Create and provide artifacts maintenance.')
+nsArtifact = Namespace(
+  "/api/v1/artifacts",
+  path="/api/v1/artifacts",
+  version="1.0",
+  description="Create and provide artifacts maintenance."
+)
 
 mongoCollectionArtifact = db.artifacts
 mongoCollectionCategory = db.categories

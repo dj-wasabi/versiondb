@@ -36,18 +36,26 @@ class Artifact:
             self.version = data['version']
         else:
             self.version = "0.0.0"
-        logger.debug('We have version "{d}" in init.'.format(d=self.version))
 
 
     def search_by_name(self, name: str = None) -> bool:
         artifactFound = mongoCollectionArtifact.count_documents({"name": name})
         if artifactFound == 0:
+            logger.debug("We did not found artifact with name '{a}'".format(a=name))
             return False
 
         artifactData = mongoCollectionArtifact.find_one({"name": name})
-        logger.debug('We have data from artifact: {d}'.format(d=artifactData))
+        logger.debug("We initialise the class with the artifact data.")
         self.__init__(data=artifactData)
         return True
+
+
+    def _add_to_category(self, category: str = None, user: str = None):
+        """Add the artifact to an category."""
+        categoryObject = Category()
+        if not categoryObject.search_by_name(name=category):
+            categoryObject.create(name=category, user=user)
+        categoryObject.add_artifact(name=self.name)
 
 
     def create(self, user: str = None) -> tuple:
@@ -58,11 +66,9 @@ class Artifact:
             data = self._get_json()
             if 'name' not in data or 'category' not in data:
                 return {"error": "Both 'name' and 'category' are required."}, 409
+
             logger.debug("We received the data '{d} to create".format(d=data))
-            category = Category()
-            if not category.search_by_name(name=data['category']):
-                category.create(name=data['category'], user=user)
-            category.add_artifact(name=self.name)
+            self._add_to_category(category=data['category'], user=user)
             version = Version(data=data)
             version.create(user=user)
 
@@ -118,8 +124,7 @@ class Artifact:
 
 
     def update(self, name: str = None, user: str = None, type: str = "patch") -> tuple:
-        self.updated_date = int(time.time())
-        self.updated_by = user
+        self._set_update_info(user=user)
         version = Version()
 
         if self.search_by_name(name=name):
@@ -141,19 +146,55 @@ class Artifact:
         else:
             return {"error": "Version for provided artifact not found."}, 404
 
+    def _set_update_info(self, user: str = None):
+        self.updated_date = int(time.time())
+        self.updated_by = user
+
 
     def patch(self, user: str = None, data: str = {}):
-        data["updated_date"] = int(time.time())
-        data["updated_by"] = user
-
         for key in data.keys():
-            self[key] = data[key]
+            if 'url' == key:
+                self._set_url(value=data['url'])
+            elif 'git' == key:
+                self._set_git(value=data['git'])
+            elif 'metadata' == key:
+                self._set_metadata(value=data['metadata'])
+            elif 'version' == key:
+                self._set_version(value=data['version'], user=user)
+            elif 'category' == key:
+                self._set_category(value=data['category'], user=user)
+            logger.debug('Updating key: {a}'.format(a=key))
             self.updateField(field=key)
-
-        self.updateField(field=key)
+        self._set_update_info(user=user)
         newData = self._get_json()
         return newData, 200
 
+    def _set_url(self, value: str = None):
+        self.url = value
+ 
+    def _set_git(self, value: str = None):
+        self.git = value
+ 
+    def _set_metadata(self, value: dict = {}):
+        self.metadata = value
+ 
+    def _set_category(self, value: str = None, user: str = None):
+        if value != self.category:
+            newCategory = Category()
+            if not newCategory.search_by_name(name=value):
+                newCategory.create(name=value, user=user)
+            newCategory.add_artifact(name=self.name, user=user)
+            newCategory.remove_artifact(name=self.name, user=user)
+ 
+    def _set_version(self, value: str = None, user: str = None):
+        if self.version != value:
+            versionData = {
+                "name": self.name,
+                "version": value
+            }
+            newVersion = Version(data=versionData)
+            newVersion.create(user=user)
+        self.version = value
 
     def updateField(self, field: str = None):
         data = self._get_json()

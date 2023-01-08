@@ -7,57 +7,102 @@ from api.v1boms.api import nsBom
 from api.v1boms.bom import Bom
 
 
-@nsBom.route('/all')
+@nsBom.route('/category/<string:category>')
 class myBom(Resource):
-    @jwt_required()
     @nsBom.response(200, 'Success')
-    def get(self):
-        """Generates a Bill of Materials of all groups and their artifacts."""
-        bom = Bom()
-        return bom.get_current()
-
-
-@nsBom.route('/group/<string:group>')
-class myBom(Resource):
-    @jwt_required()
-    @nsBom.response(200, 'Success')
+    @nsBom.response(200, model=bomV1Serials.bomOutput, description='Successfuly provided information.')
     @nsBom.marshal_with(bomV1Serials.bomOutput)
-    def get(self, group):
-        """Generates a Bill of Materials for a specific group."""
-        bom = Bom()
-        bom.search_by_name(name=group)
-        return bom.get_latest()
 
-
-@nsBom.route('/group/<string:group>/patch')
-class myBom(Resource):
     @jwt_required()
+    def get(self, category):
+        """Generates a Bill of Materials for a specific category."""
+        bom = Bom()
+        if bom.search_by_name(name=category):
+            return bom.get_latest()
+        else:
+            return {"error": "Category not found."}, 404
+
+
+@nsBom.route('/category/<string:category>/patch')
+class myBom(Resource):
     @nsBom.response(200, 'Success')
-    def put(self, group):
-        """Create a Bill of Materials with all groups and artifacts."""
+
+    @jwt_required()
+    def post(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
         userName = get_jwt_identity()
         bom = Bom()
-        bom.search_by_name(name=group)
-        return bom.patchBom(user=userName)
+        if bom.search_by_name(name=category):
+            return bom.patchBom(user=userName)
+        else:
+            return {"error": "Category not found."}, 404
 
 
-@nsBom.route('/group/<string:group>/minor')
+@nsBom.route('/category/<string:category>/minor')
 class myBom(Resource):
-    @jwt_required()
     @nsBom.response(200, 'Success')
-    def put(self, group):
-        """Create a Bill of Materials with all groups and artifacts."""
+
+    @jwt_required()
+    def post(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        userName = get_jwt_identity()
         bom = Bom()
-        bom.search_by_name(name=group)
-        return bom.get_current(group=group)
+        if bom.search_by_name(name=category):
+            return bom.minorBom(user=userName)
+        else:
+            return {"error": "Category not found."}, 404
 
 
-@nsBom.route('/group/<string:group>/major')
+@nsBom.route('/category/<string:category>/major')
 class myBom(Resource):
-    @jwt_required()
     @nsBom.response(200, 'Success')
-    def put(self, group):
-        """Create a Bill of Materials with all groups and artifacts."""
+
+    @jwt_required()
+    def post(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        userName = get_jwt_identity()
         bom = Bom()
-        bom.search_by_name(name=group)
-        return bom.get_current(group=group)
+        if bom.search_by_name(name=category):
+            return bom.majorBom(user=userName)
+        else:
+            return {"error": "Category not found."}, 404
+
+
+@nsBom.route('/category/<string:category>/versions')
+class myBom(Resource):
+    @nsBom.response(200, 'Success')
+
+    @jwt_required()
+    def get(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        bom = Bom()
+        bom.search_by_name(name=category)
+        return bom.get_current(category=category)
+
+
+@nsBom.route('/category/<string:category>/version/<string:version>')
+class myBom(Resource):
+    @nsBom.response(200, 'Success')
+
+    @jwt_required()
+    def get(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        bom = Bom()
+        bom.search_by_name(name=category)
+        return bom.get_current(category=category)
+
+
+    @jwt_required()
+    def patch(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        bom = Bom()
+        bom.search_by_name(name=category)
+        return bom.get_current(category=category)
+
+
+    @jwt_required()
+    def delete(self, category):
+        """Create a Bill of Materials with all categorys and artifacts."""
+        bom = Bom()
+        bom.search_by_name(name=category)
+        return bom.get_current(category=category)
