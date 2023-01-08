@@ -4,6 +4,10 @@
 
 [Full Changelog](https://github.com/dj-wasabi/versiondb/compare/7ce9c2901c808c83b7328e69ff8172ba59810292...HEAD)
 
+**Implemented enhancements:**
+
+- Some reorganisation of artifacts;Added pytest in workflow;Enabled var… [\#2](https://github.com/dj-wasabi/versiondb/pull/2) ([dj-wasabi](https://github.com/dj-wasabi))
+
 **Fixed bugs:**
 
 - Github workflow job fix [\#1](https://github.com/dj-wasabi/versiondb/pull/1) ([dj-wasabi](https://github.com/dj-wasabi))
