@@ -70,7 +70,7 @@ class Version:
         self.created_by = user
 
         data = json.loads(json_util.dumps(self.__dict__))
-        logger.debug(data)
+        logger.debug("Creating version {v} for artifact {a}".format(a=data["name"], v=data["version"]))
         mongoCollectionVerions.insert_one(data)
         return {"version": json.loads(json_util.dumps(self.__dict__['version']))}
 

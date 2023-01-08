@@ -27,6 +27,10 @@ jobs:
         python -m pip install -r src/requirements.txt
         python -m pip install -r src/requirements-dev.txt
 
-    - name: Execute Pytest
+    - name: Execute unit tests
+      run: |
+        pytest src/tests/unit -vvv
+
+    - name: Execute Functional tests
       run: |
         pytest src/tests/functional -vvv

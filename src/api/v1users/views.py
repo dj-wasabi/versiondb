@@ -11,11 +11,11 @@ from api.v1groups.group import Group
 @nsUserManagement.route('/<string:username>')
 # @auth.login_required
 class AuthV1(Resource):
-    @jwt_required()
     @nsUserManagement.response(200, model=UserV1Models.userGetOutput, description='Success')
     @nsUserManagement.response(404, model=UserV1Models.userErrorMessage, description='User not found')
     @nsUserManagement.doc('Getting information about the provided username.')
 
+    @jwt_required()
     def get(self, username):
         """Get overview of all available data about the provided user."""
         myUser = User()
@@ -58,7 +58,6 @@ class AuthV1(Resource):
 @nsUserManagement.route('/<string:username>/group/<string:group>')
 # @auth.login_required
 class AuthV1(Resource):
-    @jwt_required()
     @nsUserManagement.response(201, model=UserV1Models.userMessage, description='Successfully added group to the user.')
     @nsUserManagement.response(204, model=UserV1Models.userMessage, description='Successfully deleted')
     @nsUserManagement.response(400, model=UserV1Models.userErrorMessage, description='Validation payload error')
@@ -66,6 +65,7 @@ class AuthV1(Resource):
     @nsUserManagement.response(409, model=UserV1Models.userErrorMessage, description='User is already part of the group.')
     @nsUserManagement.doc('Group management by adding/removing users.')
 
+    @jwt_required()
     def post(self, group, username):
         """Add a user to the provided usergroup."""
         myUser = User()
@@ -88,7 +88,7 @@ class AuthV1(Resource):
         else:
             return {"error": "Username and/or group not found."}, 404
 
-
+    @jwt_required()
     def delete(self, group, username):
         """Removes the user from the provided group."""
         myUser = User()

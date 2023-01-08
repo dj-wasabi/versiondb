@@ -63,16 +63,31 @@ class Category:
 
 
     def add_artifact(self, name: str = None, user: str = None):
+        """Add an artifact to the category."""
         self.updated_date = int(time.time())
         self.updated_by = user
 
         artifacts = self.artifacts
         if name not in artifacts:
             artifacts.append(name)
-            self.update(field="artifacts")
+            self.updateField(field="artifacts")
 
 
-    def update(self, field: str = None):
+    def remove_artifact(self, name: str = None, user: str = None) -> bool:
+        """Remove an artifact from the category."""
+        self.updated_date = int(time.time())
+        self.updated_by = user
+        artifacts = self.artifacts
+        if name in artifacts:
+            artifacts.pop(name)
+            self.updateField(field="artifacts")
+            return True
+        else:
+            return False
+
+
+
+    def updateField(self, field: str = None):
         data = self._get_json()
         query = {"name": self.name}
         update = { "$set": {field: data[field]}}

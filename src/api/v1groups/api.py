@@ -1,7 +1,11 @@
-from flask_restx import Api
+from flask_restx import Namespace
 from api.server.mongodb.mongodb import db
 
-api = Api(version='1.0', title='VersionDB', description='VersionDB')
-nsGroupManagement = api.namespace('api/v1/groups', description='(User) Groups Management')
+nsGroupManagement = Namespace(
+  "/api/v1/groups",
+  path="/api/v1/groups",
+  version="1.0",
+  description="(User) Groups Management"
+)
 
 mongoCollectionUserGroups = db.groups

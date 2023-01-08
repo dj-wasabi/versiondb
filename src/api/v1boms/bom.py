@@ -16,6 +16,14 @@ class Bom:
             self.name = data['name']
         else:
             self.name = None
+        if 'tmp_artifacts' in data:
+            self.tmp_artifacts = data['tmp_artifacts']
+        else:
+            self.tmp_artifacts = []
+        if 'artifacts' in data:
+            self.artifacts = data['artifacts']
+        else:
+            self.artifacts = {}
         if 'version' in data:
             self.version = data['version']
             self.major = int(data['version'].split('.')[0])
@@ -37,41 +45,17 @@ class Bom:
             self.updated_by = data['updated_by']
         if 'updated_date' in data:
             self.updated_date = data['updated_date']
-        self.artifacts = {}
-
-
-    # def get_current(self, group: str = None) -> dict:
-    #     myBom = {}
-    #     if group is None:
-    #         search = {}
-    #     else:
-    #         search = {"name": group}
-
-    #     groupsData = self._get_json(data=mongoCollectionGroups.find(search))
-
-    #     for group in groupsData:
-    #         name = group["name"]
-    #         myBom[name] = {}
-
-    #         artifactData = self._get_json(data=mongoCollectionArtifact.find({"group": name}))
-    #         for artifact in artifactData:
-    #             artifactName = artifact["name"]
-    #             artifactVersion = artifact["version"]
-    #             myBom[name][artifactName] = artifactVersion
-    #     if len(myBom.items()) == 0:
-    #         return {"message": "Group not found."}, 404
-    #     return myBom, 200
 
 
     def get_latest(self) -> tuple:
         name = self.name
         logger.debug('We have name "{d}" looking for.'.format(d=self.name))
-        artifactData = self._get_json(data=mongoCollectionArtifact.find({"group": name}))
-        logger.debug('We have artifactData from group: {d}'.format(d=artifactData))
 
-        for artifact in artifactData:
-            artifactName = artifact["name"]
-            artifactVersion = artifact["version"]
+        for artifact in self.tmp_artifacts:
+            artifactData = mongoCollectionArtifact.find_one({"name": artifact})
+            logger.debug('We have artifactData: {a}'.format(a=artifactData))
+            artifactName = artifactData["name"]
+            artifactVersion = artifactData["version"]
             self.artifacts[artifactName] = artifactVersion
         return self._get_json(), 200
 
@@ -82,37 +66,77 @@ class Bom:
         else:
             search = {"name": name}
 
-        mongodbData = mongoCollectionGroups.count_documents(search)
-        logger.debug('We have found {d} groups'.format(d=mongodbData))
+        mongodbData = mongoCollectionCategory.count_documents(search)
+        logger.debug('We have found {d} category'.format(d=mongodbData))
         if mongodbData  == 0:
             return False
 
-        groupData = mongoCollectionGroups.find_one({"name": name})
-        logger.debug('We have data from group: {d}'.format(d=groupData))
-        self.__init__(data=groupData)
+        CategoryData = mongoCollectionCategory.find_one(search)
+        logger.debug('We have data from category: {d}'.format(d=CategoryData))
+        # This is now a list, but we have to store it in a different key
+        CategoryData["tmp_artifacts"] = CategoryData["artifacts"]
+        del CategoryData["artifacts"]
+        self.__init__(data=CategoryData)
         return True
 
 
     def _get_json(self, data: dict = None) -> dict:
         if data is None:
-            logger.debug('Yeah, i am here.')
             data = self.__dict__
-        return json.loads(json_util.dumps(data))
+            logger.debug('Yeah, i am here: {d}'.format(d=data))
+        # return self._removeOutput(data=json.loads(json_util.dumps(data)))
+        return data
 
 
-    def patchBom(self, user: str = None) -> tuple:
-        group = Group()
-        if group.search_by_name(name=self.name):
-            self._updatePatch()
-            group.version = self.version
-            group.update(field="version")
+    def _removeOutput(self, data: dict = {}) -> dict:
+      if "major" in data:
+        data.pop("major")
+      if "minor" in data:
+        data.pop("minor")
+      if "patch" in data:
+        data.pop("patch")
+      if "tmp_artifacts" in data:
+        data.pop("tmp_artifacts")
+      if "_id" in data:
+        data.pop("_id")
+      return data
+
+
+    def minorBom(self, user: str = None) -> tuple:
+        category = Category()
+        if category.search_by_name(name=self.name):
+            self._updateMinor()
+            category.version = self.version
+            category.update(field="version")
             data = self.get_latest()[0]
             data["created_date"] = int(time.time())
             data["created_by"] = user
+            del data["tmp_artifacts"]
             _ = mongoCollectionBom.insert_one(data)
-            return data, 200
+            logger.debug('We have bom data: {d}'.format(d=data))
+            return self._removeOutput(data=data), 200
         else:
-            return {"message": "Group not found."}, 404
+            return {"error": "Category not found."}, 404
+
+
+    def patchBom(self, user: str = None) -> tuple:
+        category = Category()
+        if category.search_by_name(name=self.name):
+            self._updatePatch()
+            logger.debug('Updating version 1...')
+            category.version = self.version
+            logger.debug('Check if we are here21212 ..')
+            category.update(field="version")
+            logger.debug('Updating version...')
+            data = self.get_latest()[0]
+            data["created_date"] = int(time.time())
+            data["created_by"] = user
+            del data["tmp_artifacts"]
+            mongoCollectionBom.insert_one(data)
+            logger.debug('We have data: {d}'.format(d=data))
+            return self._removeOutput(data=data), 200
+        else:
+            return {"message": "Category not found."}, 404
 
     def updateVersion(self):
         self.version = "{ma}.{mi}.{p}".format(
@@ -120,7 +144,7 @@ class Bom:
             mi=self.minor,
             p=self.patch
         )
-        logger.info("Updated version to {v} for group {a}.".format(v=self.version, a=self.name))
+        logger.info("Updated version to {v} for Category {a}.".format(v=self.version, a=self.name))
 
     def _updatePatch(self):
         self.patch += 1
@@ -145,6 +169,6 @@ class Bom:
         query = {"name": self.name}
         update = { "$set": {field: data[field]}}
         try:
-            mongoCollectionGroups.update_one(query, update)
+            mongoCollectionCategory.update_one(query, update)
         except Exception as e:
             logger.warning("Error while updating artifact '{n}' with message: {e}".format(n=self.name, e=e))
