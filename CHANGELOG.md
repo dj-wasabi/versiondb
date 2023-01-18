@@ -6,6 +6,7 @@
 
 **Implemented enhancements:**
 
+- Reorganise the models, added 401 output, follow a naming covention [\#3](https://github.com/dj-wasabi/versiondb/pull/3) ([dj-wasabi](https://github.com/dj-wasabi))
 - Some reorganisation of artifacts;Added pytest in workflow;Enabled var… [\#2](https://github.com/dj-wasabi/versiondb/pull/2) ([dj-wasabi](https://github.com/dj-wasabi))
 
 **Fixed bugs:**
