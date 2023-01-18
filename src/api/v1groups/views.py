@@ -5,7 +5,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from api.v1groups.api import nsGroupManagement
-from api.v1groups.models import GroupV1Models
+from api.v1groups.models import groupV1Input, groupV1Output, groupV1Output
 from api.v1groups.group import Group
 from api.v1users.user import User
 
@@ -13,11 +13,12 @@ from api.v1users.user import User
 @nsGroupManagement.route('/')
 # @auth.login_required
 class AuthV1(Resource):
-    @nsGroupManagement.response(201, model=GroupV1Models.groupCreate, description='Successfully created group')
-    @nsGroupManagement.response(400, model=GroupV1Models.groupErrorMessage, description='Validation Error')
-    @nsGroupManagement.response(409, model=GroupV1Models.groupErrorMessage, description='Duplicate Group')
+    @nsGroupManagement.response(201, model=groupV1Output.groupCreate, description='Successfully created group')
+    @nsGroupManagement.response(400, model=groupV1Output.groupErrorMessage, description='Validation Error')
+    @nsGroupManagement.response(401, model=groupV1Output.groupNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsGroupManagement.response(409, model=groupV1Output.groupErrorMessage, description='Duplicate Group')
     @nsGroupManagement.doc('Create a user group.')
-    @nsGroupManagement.expect(GroupV1Models.groupCreate, validate=True)
+    @nsGroupManagement.expect(groupV1Input.groupCreate, validate=True)
 
     @jwt_required()
     def post(self):
@@ -31,10 +32,10 @@ class AuthV1(Resource):
 
 @nsGroupManagement.route('/<string:group>')
 class AuthV1(Resource):
-    @nsGroupManagement.response(200, model=GroupV1Models.groupOutput, description='Successfully retrived data.')
-    @nsGroupManagement.response(204, model=GroupV1Models.groupMessage, description='Success deleted group.')
-    @nsGroupManagement.response(400, model=GroupV1Models.groupErrorMessage, description='Validation payload error')
-    @nsGroupManagement.response(404, model=GroupV1Models.groupErrorMessage, description='Group not found')
+    @nsGroupManagement.response(200, model=groupV1Output.groupOutput, description='Successfully retrived data.')
+    @nsGroupManagement.response(400, model=groupV1Output.groupErrorMessage, description='Validation payload error')
+    @nsGroupManagement.response(401, model=groupV1Output.groupNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsGroupManagement.response(404, model=groupV1Output.groupErrorMessage, description='Group not found')
     @nsGroupManagement.doc('Get or delete a user group.')
 
     @jwt_required()
@@ -47,6 +48,9 @@ class AuthV1(Resource):
         else:
             return {"error": "Group not found."}, 404
 
+    @nsGroupManagement.response(204, model=groupV1Output.groupDelete, description='Success deleted group.')
+    @nsGroupManagement.response(401, model=groupV1Output.groupNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsGroupManagement.response(404, model=groupV1Output.groupErrorMessage, description='Group not found')
     @jwt_required()
     def delete(self, group):
         """Delete the group."""
