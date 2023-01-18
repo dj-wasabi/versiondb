@@ -24,6 +24,8 @@ class User:
             self.username = data['username']
         if 'groups' in data:
             self.groups = data['groups']
+        else:
+            self.groups = []
 
 
     def authenticateUser(self, data={}) -> tuple:
@@ -92,6 +94,9 @@ class User:
         hashVar = self._encryptPassword(value=password)
         del password
         logger.debug("Encrypting password and remove 'cleartext' from dict.")
+
+        if len(self.groups) == 0:
+            return {"error": "No groups provided for user."}, 400
 
         allGroups = Group()
         notExist, state = allGroups.validateGroups(groups=self.groups)
