@@ -141,7 +141,7 @@ class Artifact:
             data = version.create(user=user)
             self.version = version.version
             logger.debug("We have set version {s} for the 'version'".format(s=self.version))
-            self.updateField(field="version")
+            self._updateField(field="version")
             return data, 201
         else:
             return {"error": "Version for provided artifact not found."}, 404
@@ -164,10 +164,9 @@ class Artifact:
             elif 'category' == key:
                 self._set_category(value=data['category'], user=user)
             logger.debug('Updating key: {a}'.format(a=key))
-            self.updateField(field=key)
+            self._updateField(field=key)
         self._set_update_info(user=user)
-        newData = self._get_json()
-        return newData, 200
+        return self._get_json(), 200
 
     def _set_url(self, value: str = None):
         self.url = value
@@ -196,7 +195,7 @@ class Artifact:
             newVersion.create(user=user)
         self.version = value
 
-    def updateField(self, field: str = None):
+    def _updateField(self, field: str = None):
         data = self._get_json()
         logger.debug("Found 'data': {s}".format(s=data))
         logger.debug("Input named 'field': {s}".format(s=field))

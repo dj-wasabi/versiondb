@@ -28,8 +28,8 @@ def test_api_v1users_create():
     myGroup = Group()
     myGroup.create(data=groupDict)
 
-    myUser = User()
-    output, state = myUser.create(data=UserDict)
+    myUser = User(data=UserDict)
+    output, state = myUser.create(password="mypassword")
 
     assert output["username"] == "myusername"
     assert output["is_active"]
@@ -42,8 +42,8 @@ def test_api_v1users_no_group():
       "username": "myusername",
       "password": "mypassword"
     }
-    myUser = User()
-    output, state = myUser.create(data=UserDict)
+    myUser = User(data=UserDict)
+    output, state = myUser.create(password="mypassword")
 
     assert output["error"] == "No groups provided for user."
     assert state == 400
@@ -59,34 +59,19 @@ def test_api_v1users_exist():
       "groups": ["mygroupname"]
     }
     myGroup = Group()
-    myUser = User()
+    myUser = User(data=UserDict)
     myGroup.create(data=groupDict)
-    myUser.create(data=UserDict)
+    myUser.create(password="mypassword")
 
     myNewUser = User()
-    exist = myNewUser.userExist(name="myusername")
+    exist = myNewUser.search_by_name(name="myusername")
     assert exist
 
 
 def test_api_v1users_exist_not():
     myUser = User()
-    exist = myUser.userExist(name="notexist")
+    exist = myUser.search_by_name(name="notexist")
     assert not exist
-
-
-def test_api_v1users_remove_output():
-    data = {
-      "_id": 1234567,
-      "username": "myusername",
-      "password": "mypassword",
-      "groups": ["mygroupname"]
-    }
-    myUser = User()
-    new_data = myUser._removeOutput(data=data)
-
-    assert '_id' not in new_data
-    assert 'username' in new_data
-    assert 'password' not in new_data
     
 
 def test_api_v1users_in_group():

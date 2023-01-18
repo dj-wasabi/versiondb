@@ -39,6 +39,8 @@ class Group:
         for group in groups:
             if not self.groupExist(name=group):
                 notExist.append(group)
+        logger.debug("Validated groups provided {g}".format(g=groups))
+        logger.debug("Groups {g} does not exist.".format(g=notExist))
         if len(notExist) == 0:
             return [], True
         else:

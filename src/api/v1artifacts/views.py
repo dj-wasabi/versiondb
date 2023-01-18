@@ -10,11 +10,12 @@ from api.v1artifacts.version import Version
 
 @nsArtifact.route('/')
 class ArtifactV1(Resource):
-    @nsArtifact.response(201, model=artifactV1Input.createArtifact, description='Successfuly created artifact.')
+    @nsArtifact.response(201, model=artifactV1Input.artifactCreate, description='Successfuly created artifact.')
     @nsArtifact.response(400, model=artifactV1Output.artifactErrorMessage, description='Payload validation error')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(409, model=artifactV1Output.artifactErrorMessage, description='Attempt to a duplicated artifact creation.')
     @nsArtifact.doc('Create an artifact in the database.')
-    @nsArtifact.expect(artifactV1Input.createArtifact, validate=True)
+    @nsArtifact.expect(artifactV1Input.artifactCreate, validate=True)
 
     @jwt_required()
     def post(self):
@@ -28,7 +29,8 @@ class ArtifactV1(Resource):
 
 @nsArtifact.route('/<string:artifact>')
 class ArtifactV1(Resource):
-    @nsArtifact.response(200, model=artifactV1Input.createArtifact, description='Successfuly retrieved artifact.')
+    @nsArtifact.response(200, model=artifactV1Input.artifactCreate, description='Successfuly retrieved artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @nsArtifact.doc('Get all information about the artifact.')
 
@@ -42,11 +44,12 @@ class ArtifactV1(Resource):
         else:
             return {"error": "Artifact not found."}, 404
 
-    @nsArtifact.response(200, model=artifactV1Input.createArtifact, description='Successfuly patched artifact.')
+    @nsArtifact.response(200, model=artifactV1Input.artifactCreate, description='Successfuly patched artifact.')
     @nsArtifact.response(400, model=artifactV1Output.artifactErrorMessage, description='Payload validation error')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
-    @nsArtifact.expect(artifactV1Input.createArtifact, validate=True)
-    @nsArtifact.marshal_with(artifactV1Input.createArtifact)
+    @nsArtifact.expect(artifactV1Input.artifactPatch, validate=True)
+    @nsArtifact.marshal_with(artifactV1Input.artifactPatch)
 
     @jwt_required()
     def patch(self, artifact):
@@ -64,7 +67,7 @@ class ArtifactV1(Resource):
 @nsArtifact.route('/<string:artifact>/patch')
 class ArtifactV1Patch(Resource):
     @nsArtifact.response(200, model=artifactV1Output.artifactVersionMessage, description='Successfuly retrieved the next "patch" version of artifact.')
-    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "patch" version artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @nsArtifact.doc("Increment the 'patch' version of the artifact with 1.")
     @nsArtifact.marshal_with(artifactV1Output.artifactVersionMessage)
@@ -79,6 +82,10 @@ class ArtifactV1Patch(Resource):
         else:
             return {"error": "Artifact not found."}, 404
 
+
+    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "patch" version artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @jwt_required()
     def post(self, artifact):
         """Increment the 'patch' version of the artifact with 1."""
@@ -94,8 +101,8 @@ class ArtifactV1Patch(Resource):
 @nsArtifact.route('/<string:artifact>/minor')
 class ArtifactV1Minor(Resource):
     @nsArtifact.doc("Increment the 'minor' version of the artifact with 1.")
-    @nsArtifact.response(200, model=artifactV1Input.createArtifact, description='Successfuly retrieved the next "minor" version of artifact.')
-    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "minor" version artifact.')
+    @nsArtifact.response(200, model=artifactV1Input.artifactCreate, description='Successfuly retrieved the next "minor" version of artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @nsArtifact.marshal_with(artifactV1Output.artifactVersionMessage)
 
@@ -109,6 +116,9 @@ class ArtifactV1Minor(Resource):
         else:
             return {"error": "Artifact not found."}, 404
 
+    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "minor" version artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @jwt_required()
     def post(self, artifact):
         """Increment the 'minor' version of the artifact with 1."""
@@ -123,8 +133,8 @@ class ArtifactV1Minor(Resource):
 @nsArtifact.route('/<string:artifact>/major')
 class ArtifactV1tMajor(Resource):
     @nsArtifact.doc("Increment the 'major' version of the artifact with 1.")
-    @nsArtifact.response(200, model=artifactV1Input.createArtifact, description='Successfuly retrieved the next "major" version of artifact.')
-    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "major" version artifact.')
+    @nsArtifact.response(200, model=artifactV1Input.artifactCreate, description='Successfuly retrieved the next "major" version of artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @nsArtifact.marshal_with(artifactV1Output.artifactVersionMessage)
 
@@ -138,6 +148,9 @@ class ArtifactV1tMajor(Resource):
         else:
             return {"error": "Artifact not found."}, 404
 
+    @nsArtifact.response(201, model=artifactV1Output.artifactVersionMessage, description='Successfuly updated "major" version artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
+    @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @jwt_required()
     def post(self, artifact):
         """Increment the 'major' version of the artifact with 1."""
@@ -152,7 +165,8 @@ class ArtifactV1tMajor(Resource):
 @nsArtifact.route('/<string:artifact>/versions')
 class versionV1Versions(Resource):
     @nsArtifact.doc("Get overview of all versions of this artifact")
-    @nsArtifact.response(200, model=artifactV1Input.createArtifact, description='Successfuly retrieved version of artifact.')
+    @nsArtifact.response(200, model=artifactV1Input.artifactCreate, description='Successfuly retrieved version of artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
     @nsArtifact.marshal_with(artifactV1Input.artifactVersionsMessage)
 
@@ -170,7 +184,8 @@ class versionV1Versions(Resource):
 @nsArtifact.route('/<string:artifact>/version/<string:version>')
 class ArtifactV1Version(Resource):
     @nsArtifact.doc("Artifact version management.")
-    @nsArtifact.response(200, model=artifactV1Output.overviewVersion, description='Successfuly retrieved version of artifact.')
+    @nsArtifact.response(200, model=artifactV1Output.artifactoverviewVersion, description='Successfuly retrieved version of artifact.')
+    @nsArtifact.response(401, model=artifactV1Output.artifactNoAuthentication, description='Authentication issue with missing the token in header')
     @nsArtifact.response(404, model=artifactV1Output.artifactErrorMessage, description='Artifact does not exist')
 
     @jwt_required()

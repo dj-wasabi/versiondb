@@ -20,12 +20,12 @@ def initialise():
   createIndexes()
 
   # Create 'admin' user
-  adminUser = User()
+  adminUser = User(data=userDict)
   adminGroup = Group()
   logger.debug("Creating the admin group '{g}'.".format(g=adminGroup))
   _, _ = adminGroup.create(data=groupDict)
   logger.debug("Creating the admin user '{u}'.".format(u=userName))
-  message, _ = adminUser.create(data=userDict)
+  message, _ = adminUser.create(password=userDict["password"])
   logger.debug("User created with '{m}'.".format(m=message))
 
 

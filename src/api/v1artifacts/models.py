@@ -3,7 +3,7 @@ from api.v1artifacts.api import nsArtifact
 
 
 class artifactV1Output():
-    overviewVersion = nsArtifact.model('overviewVersion', {
+    artifactoverviewVersion = nsArtifact.model('artifactoverviewVersion', {
         'name': fields.String(description="The name of the artifact."),
         'version': fields.String(description="The version of the artifact."),
         'shasum': fields.String(description="The 'shasum' of the artifact belonging to this version."),
@@ -19,29 +19,39 @@ class artifactV1Output():
     artifactVersionMessage = nsArtifact.model('artifactVersionMessage', {
         'version': fields.String(description="The version value."),
     }, strict=True)
-
+    artifactNoAuthentication = nsArtifact.model('artifactNoAuthentication', {
+        'msg': fields.String(description="Missing Authorization Header"),
+    }, strict=True)
 
 class artifactV1Input():
-    metadata = nsArtifact.model('Metadata', {
+    artifactMetadata = nsArtifact.model('artifactMetadata', {
         'key': fields.String(readOnly=True, description="The key name of the metadata option."),
         'value': fields.String(readOnly=True, description="The value for the metadata.")
     })
 
-    createArtifact = nsArtifact.model('Artifact', {
+    artifactCreate = nsArtifact.model('artifactCreate', {
         'name': fields.String(description="The name of the artifact."),
         'category': fields.String(description="The name of the category."),
         'url': fields.String(description="URL that provides some information."),
         'git': fields.String(description="The GIT URL either http(s) or git."),
         'version': fields.String(default="0.0.0", description="The version to start with."),
-        'metadata': fields.List(fields.Nested(metadata)),
+        'metadata': fields.List(fields.Nested(artifactMetadata)),
     }, strict=True)
 
-    metaVersions = nsArtifact.model('metaVersions', {
+    artifactPatch = nsArtifact.model('artifactPatch', {
+        'category': fields.String(description="The name of the category."),
+        'url': fields.String(description="URL that provides some information."),
+        'git': fields.String(description="The GIT URL either http(s) or git."),
+        'version': fields.String(default="0.0.0", description="The version to start with."),
+        'metadata': fields.List(fields.Nested(artifactMetadata)),
+    }, strict=True)
+
+    artifactMetaVersions = nsArtifact.model('artifactMetaVersions', {
         'version': fields.String(readOnly=True, description="The version."),
         'created': fields.String(readOnly=True, description="The date when version was created (epoch).")
     })
     artifactVersionsMessage = nsArtifact.model('artifactVersionsMessage', {
-        'versions': fields.List(fields.Nested(metaVersions)),
+        'versions': fields.List(fields.Nested(artifactMetaVersions)),
     }, strict=True)
     artifactVersionMessage = nsArtifact.model('artifactVersionMessage', {
         'version': fields.String(description="The version value."),

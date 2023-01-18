@@ -1,12 +1,17 @@
 from flask_restx import fields
 from api.v1groups.api import nsGroupManagement
 
-
-class GroupV1Models():
-    groupMessage = nsGroupManagement.model('groupMessage', {
-        'message': fields.String(description="Notification message."),
+class groupV1Input():
+    groupCreate = nsGroupManagement.model('groupCreate', {
+        'name': fields.String(description="The name of the group.")
     }, strict=True)
-    groupErrorMessage = nsGroupManagement.model('userErrorgroupErrorMessageMessage', {
+
+
+class groupV1Output():
+    groupNoAuthentication = nsGroupManagement.model('groupNoAuthentication', {
+        'msg': fields.String(description="Missing Authorization Header"),
+    }, strict=True)
+    groupErrorMessage = nsGroupManagement.model('groupErrorMessage', {
         'error': fields.String(description="An error message explaining what when wrong."),
     }, strict=True)
     groupCreate = nsGroupManagement.model('groupCreate', {

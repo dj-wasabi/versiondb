@@ -63,7 +63,7 @@ def test_api_users_register_user_already_exist(test_client):
 
     data = response.json
     assert response.status_code == 409
-    assert data['error'] == "Username is already used."
+    assert data['error'] == "Username is already taken."
 
 
 def test_api_users_register_new_user(test_client, getRandomName):
