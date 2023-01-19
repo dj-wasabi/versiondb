@@ -1,0 +1,38 @@
+---
+version: '3.8'
+
+services:
+  versiondb:
+    environment:
+      FLASK_ENV: production
+      VERSIONDB_MONGODB_HOST: mongodb
+      VERSIONDB_MONGODB_USERNAME: root
+      VERSIONDB_MONGODB_PASSWORD: rootpassword
+      VERSIONDB_ADMIN_USERNAME: admin
+      VERSIONDB_ADMIN_PASSWORD: admin
+      JWT_SECRET_KEY: 'r6c7tvg8bhircftv78bghrc6t7vby8n9u'
+    image: ghcr.io/dj-wasabi/versiondb:main
+    container_name: versiondb
+    ports:
+      - "5001:5001"
+    networks:
+      - versiondb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - versiondb
+
+networks:
+  versiondb:
+
+volumes:
+  mongodb_data:
