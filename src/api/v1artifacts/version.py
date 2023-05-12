@@ -3,7 +3,7 @@ import json
 from bson import json_util
 from api.server.logging import logger
 
-from api.v1artifacts.category import Category
+from api.v1categories.category import Category
 from api.v1artifacts.api import mongoCollectionVerions
 
 

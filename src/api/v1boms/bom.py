@@ -1,6 +1,6 @@
 import time
 import json
-from api.v1artifacts.category import Category
+from api.v1categories.category import Category
 from bson import json_util
 
 from api.v1artifacts.api import mongoCollectionCategory, mongoCollectionArtifact

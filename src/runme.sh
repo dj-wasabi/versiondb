@@ -1,22 +1,17 @@
 #!/bin/bash
 
-function run_me() {
+function run_flask() {
     echo "Start application."
     /usr/local/bin/python /app/app.py & WORKER_PID=$!
     wait $WORKER_PID
 }
 
-# function stop_me() {
-#     echo "Stopping application and deregister service in Consul."
-#     /usr/local/bin/python deregister.py
-#     exit 1
-# }
+function run_gunicorn() {
+    echo "Start application."
+    gunicorn --worker-class gevent --workers 8 --bind 0.0.0.0:5001 app:app --max-requests 10000 --timeout 5 --keep-alive 5 --log-level info
+}
 
-# trap 'stop_me' TERM
-
-if [[ "${FLASK_ENV}" == "test" ]]
-    then    sleep 1
-            pip install -r /app/requirements-dev.txt
-            python manage.py test
-    else    run_me
+if [[ "${VERSIONDB_ENVIRONMENT}" == "production" ]]
+    then    run_gunicorn
+    else    run_flask
 fi

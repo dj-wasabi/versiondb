@@ -1,11 +1,12 @@
 from pymongo import MongoClient
 import mongomock
+import os
 from api.server.mongodb import getMongoConfig
 from api.server.config import getConfig
 
 
 configSettings = getMongoConfig()
-flaskEnv = getConfig(name="FLASK_ENV")
+flaskEnv = os.environ.get("VERSIONDB_ENVIRONMENT", default="development")
 
 if flaskEnv == "ci":
   client = mongomock.MongoClient()
