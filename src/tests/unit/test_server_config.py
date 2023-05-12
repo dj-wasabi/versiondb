@@ -12,13 +12,13 @@ def test_server_config_as_dict():
     config = as_dict()
 
     assert config
-    assert config['FLASK_ENV'] == "ci"
+    assert config['VERSIONDB_ENVIRONMENT'] == "ci"
     assert config['TESTING']
     assert config['VERSIONDB_ADMIN_USERNAME'] == "admin"
 
 
 def test_server_config_getConfig():
-    config = getConfig(name="FLASK_ENV")
+    config = getConfig(name="VERSIONDB_ENVIRONMENT")
     assert config == "ci"
 
     no_config = getConfig(name="FLASK_ENV_FLASK")

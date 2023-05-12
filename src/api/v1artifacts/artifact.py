@@ -51,10 +51,11 @@ class Artifact:
 
 
     def _add_to_category(self, category: str = None, user: str = None):
-        """Add the artifact to an category."""
+        """Add the artifact to an category. If category does not exist, we create one."""
         categoryObject = Category()
         if not categoryObject.search_by_name(name=category):
-            categoryObject.create(name=category, user=user)
+            categoryObject = Category({"name": category})
+            categoryObject.create(user=user)
         categoryObject.add_artifact(name=self.name)
 
 
