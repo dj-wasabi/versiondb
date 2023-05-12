@@ -13,6 +13,7 @@ class Defaults(object):
     RESTPLUS_MASK_SWAGGER      = True
     RESTPLUS_ERROR_404_HELP    = True
     TESTING                    = False
+    VERSIONDB_ENABLE_SWAGGER   = os.environ.get("VERSIONDB_ENABLE_SWAGGER", default=True)
     VERSIONDB_ADMIN_USERNAME   = os.environ.get("VERSIONDB_ADMIN_USERNAME", default="admin")
     VERSIONDB_ADMIN_PASSWORD   = os.environ.get("VERSIONDB_ADMIN_PASSWORD", default="password")
     VERSIONDB_SERVICE_NAME     = os.environ.get("VERSIONDB_SERVICE_NAME", default="VersionDB")
@@ -33,9 +34,7 @@ class Defaults(object):
 
 class developmentConfig(Defaults):
     """Parent configuration class."""
-
     TESTING                  = True
-    FLASK_ENV                = "development"
 
 
 class ciConfig(Defaults):
@@ -43,22 +42,20 @@ class ciConfig(Defaults):
 
     DEBUG                     = True
     TESTING                   = True
-    FLASK_ENV                 = "ci"
-    CACHE_TYPE                = "fake"
     VERSIONDB_CONFIG_LOG_PATH = os.environ.get("VERSIONDB_CONFIG_LOG_PATH", default="/tmp")
 
 
-class ProductionConfig(Defaults):
+class productionConfig(Defaults):
     """Configurations for Production."""
 
     DEBUG                    = False
     ERROR_404_HELP           = False
-    FLASK_ENV                = "production"
+    VERSIONDB_ENABLE_SWAGGER = False
 
 
 app_config = {
     'development': developmentConfig,
     'ci': ciConfig,
     'test': ciConfig,
-    'production': ProductionConfig,
+    'production': productionConfig,
 }

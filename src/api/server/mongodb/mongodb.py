@@ -5,7 +5,7 @@ from api.server.config import getConfig
 
 
 configSettings = getMongoConfig()
-flaskEnv = getConfig(name="FLASK_ENV")
+flaskEnv = getConfig(name="VERSIONDB_ENVIRONMENT")
 
 if flaskEnv == "ci":
   client = mongomock.MongoClient()

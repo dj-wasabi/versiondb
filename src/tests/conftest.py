@@ -7,7 +7,6 @@ import random
 
 from requests import head
 
-
 currentPath = os.path.dirname(os.path.realpath(__file__))
 rootPath = os.path.join(currentPath, "..")
 sys.path.append(rootPath)
