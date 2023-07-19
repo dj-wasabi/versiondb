@@ -61,7 +61,7 @@ jobs:
         cd main
 
         # Generate CHANGELOG.md file
-        ../dj-wasabi-release/release.sh -d || git checkout CHANGELOG.md ; exit 0
+        ../dj-wasabi-release/release.sh -d
 
         # Let commit the changes if there are any? (Well there should be!)
         if [[ $(git status | grep -c 'CHANGELOG.md' || true) -gt 0 ]]
