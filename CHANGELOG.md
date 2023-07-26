@@ -6,12 +6,18 @@
 
 **Implemented enhancements:**
 
+- Add catagories [\#5](https://github.com/dj-wasabi/versiondb/pull/5) ([dj-wasabi](https://github.com/dj-wasabi))
+- Added a better documentation document to start with [\#4](https://github.com/dj-wasabi/versiondb/pull/4) ([dj-wasabi](https://github.com/dj-wasabi))
 - Reorganise the models, added 401 output, follow a naming covention [\#3](https://github.com/dj-wasabi/versiondb/pull/3) ([dj-wasabi](https://github.com/dj-wasabi))
 - Some reorganisation of artifacts;Added pytest in workflow;Enabled var… [\#2](https://github.com/dj-wasabi/versiondb/pull/2) ([dj-wasabi](https://github.com/dj-wasabi))
 
 **Fixed bugs:**
 
 - Github workflow job fix [\#1](https://github.com/dj-wasabi/versiondb/pull/1) ([dj-wasabi](https://github.com/dj-wasabi))
+
+**Merged pull requests:**
+
+- Bump requests from 2.30.0 to 2.31.0 in /src [\#6](https://github.com/dj-wasabi/versiondb/pull/6) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 
 
