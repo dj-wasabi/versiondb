@@ -50,7 +50,7 @@ class productionConfig(Defaults):
 
     DEBUG                    = False
     ERROR_404_HELP           = False
-    VERSIONDB_ENABLE_SWAGGER = False
+    VERSIONDB_ENABLE_SWAGGER = os.environ.get("VERSIONDB_ENABLE_SWAGGER", default=False)
 
 
 app_config = {

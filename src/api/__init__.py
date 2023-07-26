@@ -24,12 +24,14 @@ def create_app(config_name, app=app, api=api):
     app.config.from_object(app_config[config_name])
     enable_swagger = app.config['VERSIONDB_ENABLE_SWAGGER']
 
+    from api.server.health.views import nsHealth as nsHealth
     from api.v1artifacts.views import nsArtifact as nsArtifact
     from api.v1categories.views import nsCategory as nsCategory
     from api.v1boms.views import nsBom as nsBom
     from api.v1users.views import nsUserManagement as nsUserManagement
     from api.v1groups.views import nsGroupManagement as nsGroupManagement
 
+    api.add_namespace(nsHealth)
     api.add_namespace(nsArtifact)
     api.add_namespace(nsCategory)
     api.add_namespace(nsBom)

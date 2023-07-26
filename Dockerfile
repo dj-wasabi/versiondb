@@ -6,7 +6,7 @@ RUN mkdir /app
 WORKDIR /app
 COPY src/requirements.txt /app/requirements.txt
 
-RUN apk add --update tini bash curl && \
+RUN apk add --update tini bash curl nginx && \
     apk add --update --virtual .build-deps gcc linux-headers musl-dev bash libffi-dev && \
     pip install --no-cache-dir -r requirements.txt && \
     adduser -D ${USERNAME} && \
@@ -14,6 +14,8 @@ RUN apk add --update tini bash curl && \
     find /usr/local \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + && \
+    chown -R ${USERNAME} /run/nginx /var/lib/nginx /var/log/nginx && \
+    chmod -R 775 /run/nginx /var/lib/nginx /var/log/nginx && \
     apk del build-base && \
     rm -rf /var/cache/apk/* /root/.cache/pip
 
@@ -25,4 +27,4 @@ EXPOSE 5001
 ENV SHELL /bin/bash
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD [ "/app/runme.sh" ]
+CMD [ "/app/entrypoint.sh" ]
