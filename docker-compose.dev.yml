@@ -1,0 +1,40 @@
+---
+version: '3.8'
+
+services:
+  versiondb_dev:
+    environment:
+      FLASK_DEBUG: true
+      # VERSIONDB_ENVIRONMENT: development
+      VERSIONDB_ENVIRONMENT: production
+      VERSIONDB_MONGODB_HOST: mongodb_dev
+      VERSIONDB_MONGODB_USERNAME: root
+      VERSIONDB_MONGODB_PASSWORD: rootpassword
+      JWT_SECRET_KEY: ='t1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
+    build: .
+    container_name: versiondb_dev
+    volumes:
+      - ./src/:/app
+    ports:
+      - "5001:5001"
+    networks:
+      - versiondb_dev
+
+  mongodb_dev:
+    image: mongo:latest
+    container_name: mongodb_dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - versiondb_dev
+
+networks:
+  versiondb_dev:
+
+volumes:
+  mongodb_data:
