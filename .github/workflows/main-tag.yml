@@ -44,5 +44,5 @@ jobs:
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
         push: true
-        tags: ${{ steps.get-latest-tag.outputs.tag }}
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get-latest-tag.outputs.tag }}
         labels: ${{ steps.meta.outputs.labels }}
