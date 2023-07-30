@@ -1,8 +1,8 @@
 # Changelog
 
-## [0.0.1](https://github.com/dj-wasabi/versiondb/tree/0.0.1) (2023-07-26)
+## [Unreleased](https://github.com/dj-wasabi/versiondb/tree/HEAD)
 
-[Full Changelog](https://github.com/dj-wasabi/versiondb/compare/7ce9c2901c808c83b7328e69ff8172ba59810292...0.0.1)
+[Full Changelog](https://github.com/dj-wasabi/versiondb/compare/7ce9c2901c808c83b7328e69ff8172ba59810292...HEAD)
 
 **Implemented enhancements:**
 
