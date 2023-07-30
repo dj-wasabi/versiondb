@@ -46,3 +46,25 @@ jobs:
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get-latest-tag.outputs.tag }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: capture changelog
+      id: changelog
+      uses: metcalfc/changelog-generator@v4.0.1
+      with:
+        myToken: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: sbt ci-publish-github
+      run: sbt compile publish
+
+    - name: ci-release-github
+      id: create-release
+      uses: actions/create-release@latest
+      with:
+        allowUpdates: true
+        tag_name: ${{ steps.get-latest-tag.outputs.tag }}
+        release_name: Release ${{ steps.get-latest-tag.outputs.tag }}
+        body: |
+          ## What's Changed
+          ${{ steps.changelog.outputs.changelog }}
+        draft: false
+        prerelease: false
